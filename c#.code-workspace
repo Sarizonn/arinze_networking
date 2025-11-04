@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../../Desktop/c#"
+		},
+		{
+			"path": "../../../Documents/Project 2"
+		}
+	],
+	"settings": {
+		"dotnet.defaultSolution": "Project-1.sln"
+	}
+}
