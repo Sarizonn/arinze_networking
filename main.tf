@@ -38,11 +38,16 @@ resource "aws_security_group" "arinze_security_group" {
   }
 }
 
+variable "key_name" {
+  type = string
+  default = "arinze_key"
+}
+
 # ----------------------------
 # Key Pair
 # ----------------------------
 resource "aws_key_pair" "arinze_key" {
-  key_name   = "arinze_key"
+  key_name   = var.key_name
   public_key = file("arinze.pub")
 }
 
