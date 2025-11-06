@@ -1,79 +1,68 @@
-name: Deploy Infrastructure
+---
+- name: Setup Web Server
+  hosts: all
+  become: yes
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.8
+  tasks:
+    - name: Install Python 3.8 (Amazon Linux 2)
+      raw: amazon-linux-extras install -y python3.8 || true
+      
+    - name: Gather facts
+      setup:
+      
+    - name: Install Docker
+      shell: yum install -y docker
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
 
-jobs:
-  terraform:
-    name: Terraform Deploy
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Install Docker Compose binary
+      shell: |
+        curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
 
-      - name: Install Ansible
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
+    - name: Install Nginx
+      shell: amazon-linux-extras install -y nginx1
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
+    - name: Configure Nginx
+      copy:
+        content: |
+          server {
+              listen 80;
+              server_name _;
+              
+              location / {
+                  proxy_pass http://localhost:8080;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              }
+          }
+        dest: /etc/nginx/conf.d/default.conf
 
-      - name: Download Terraform state
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: deploy.yml
-          name: terraform-state
-          path: .
-          if_no_artifact_found: warn
-        continue-on-error: true
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
 
-      - name: Generate unique key name
-        id: key_name
-        run: echo "name=arinze_key_$(date +%s)" >> $GITHUB_OUTPUT
+    - name: Copy arinzewebsite files
+      copy:
+        src: arinzewebsite/
+        dest: /home/ec2-user/webpage/
+        owner: ec2-user
+        group: ec2-user
 
-      - name: Setup SSH Keys
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > arinze
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" | tr -d '\r' > arinze.pub
-          chmod 600 arinze
-          chmod 644 arinze.pub
-          echo "Using key name: ${{ steps.key_name.outputs.name }}"
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -var="key_name=${{ steps.key_name.outputs.name }}"
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -var="key_name=${{ steps.key_name.outputs.name }}"
-
-      - name: Upload Terraform state
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-state
-          path: |
-            terraform.tfstate
-            terraform.tfstate.backup
-          retention-days: 90
+    - name: Run Docker Compose
+      shell: cd /home/ec2-user/webpage && sg docker -c "/usr/local/bin/docker-compose up -d --build"
