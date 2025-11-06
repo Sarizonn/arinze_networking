@@ -8,7 +8,6 @@ provider "aws" {
 
 resource "aws_security_group" "arinze_security_group" {
   name        = "arinze_security_group_new2"
-  name_prefix = "arinze_security_group_"
   description = "Allow SSH, HTTP, and HTTPS inbound traffic"
 
   ingress {
@@ -73,7 +72,7 @@ resource "aws_instance" "arinze_server" {
       sleep 30 && \
       ANSIBLE_HOST_KEY_CHECKING=False \
       ansible-playbook -i '${self.public_ip},' -u ec2-user \
-      --private-key arinze deploy.yml
+      --private-key ~/.ssh/arinze deploy.yml
     EOT
   }
 }
