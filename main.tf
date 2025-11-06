@@ -7,7 +7,8 @@ provider "aws" {
 # ----------------------------
 
 resource "aws_security_group" "arinze_security_group" {
-  name        = "arinze_security_group_new"
+  name        = "arinze_security_group_new2"
+  name_prefix = "arinze_security_group_"
   description = "Allow SSH, HTTP, and HTTPS inbound traffic"
 
   ingress {
