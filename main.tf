@@ -5,6 +5,7 @@ provider "aws" {
 # ----------------------------
 # Security Group
 # ----------------------------
+
 resource "aws_security_group" "arinze_security_group" {
   name        = "arinze_security_group"
   description = "Allow SSH, HTTP, and HTTPS inbound traffic"
