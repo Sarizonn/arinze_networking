@@ -72,7 +72,7 @@ resource "aws_instance" "arinze_server" {
       sleep 30 && \
       ANSIBLE_HOST_KEY_CHECKING=False \
       ansible-playbook -i '${self.public_ip},' -u ec2-user \
-      --private-key ~/.ssh/arinze deploy.yml
+      --private-key arinze deploy.yml
     EOT
   }
 }
