@@ -80,4 +80,6 @@ Users can reach the web server through **standard HTTP (Port 80)** while using t
 Terraform outputs the public IP address of the instance along with other information following a successful apply operation:
 
 # Terraform Output
-The output shows the instance public IP address as "52.34.54.138” under the instance public ip field.
+The output shows the instance public IP address as "34.211.7.156” under the instance public ip field.
+
+
