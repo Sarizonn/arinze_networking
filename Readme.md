@@ -34,7 +34,7 @@ The infrastructure operates in the **us-west-2 (Oregon)** region.
 All inbound traffic is permitted through the following ports from any source address `0.0.0.0/0` according to the system security group rules:
 
 * HTTP: Port 80
-* SSH: Port 22 (Note: Restrict this in a production environment)
+* SSH: Port 22 (This is restricted in a production environment)
 * HTTPS: Port 443
 
 ---
@@ -65,6 +65,7 @@ The workflow maintains the **`terraform.tfstate`** file by passing it between do
 All GitHub repositories need the following secrets to be configured:
 
 | Secret Name | Description |
+| :--- | :--- |
 | `AWS_ACCESS_KEY_ID` | My AWS Access Key ID. |
 | `AWS_SECRET_ACCESS_KEY` | My AWS Secret Access Key. |
 | `SSH_PRIVATE_KEY` | The content of the private key file (e.g., arinze). |
