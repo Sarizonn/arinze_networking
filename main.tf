@@ -7,7 +7,7 @@ provider "aws" {
 # ----------------------------
 
 resource "aws_security_group" "arinze_security_group" {
-  name        = "arinze_security_group_yuy"
+  name        = "arinze_security_group_networks"
   description = "Allow SSH, HTTP, and HTTPS inbound traffic"
 
   ingress {
@@ -67,23 +67,23 @@ resource "aws_instance" "arinze_server" {
   }
 
   # Wait for the instance to be ready, then run Ansible playbook locally
-  # provisioner "local-exec" {
-  #   command = <<EOT
-  #     sleep 30 && \
-  #     ANSIBLE_HOST_KEY_CHECKING=False \
-  #     ansible-playbook -i '${self.public_ip},' -u ec2-user \
-  #     --private-key ~/.ssh/arinze deploy.yml
-  #   EOT
-  # }
-
-   provisioner "local-exec" {
+  provisioner "local-exec" {
     command = <<EOT
       sleep 30 && \
       ANSIBLE_HOST_KEY_CHECKING=False \
       ansible-playbook -i '${self.public_ip},' -u ec2-user \
-      --private-key arinze deploy.yml
+      --private-key ~/.ssh/arinze deploy.yml
     EOT
   }
+
+  #  provisioner "local-exec" {
+  #   command = <<EOT
+  #     sleep 30 && \
+  #     ANSIBLE_HOST_KEY_CHECKING=False \
+  #     ansible-playbook -i '${self.public_ip},' -u ec2-user \
+  #     --private-key arinze deploy.yml
+  #   EOT
+  # }
 }
 
 # ----------------------------
