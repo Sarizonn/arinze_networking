@@ -2,7 +2,9 @@
 ## AWS + Terraform + Ansible + GitHub Actions 
 
 **By:** Arinze Akosa
+
 **Project:** Automated Container deployment and Administration in the Cloud
+
 **Module:** Network Systems & Administration
 
 ---
