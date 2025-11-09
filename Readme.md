@@ -1,6 +1,15 @@
-# Cloud Web Server Deployment with Terraform and Ansible
+# Cloud Web Server Deployment with Terraform and Ansible using DevOps best practices
+## AWS + Terraform + Ansible + GitHub Actions 
 
-The implementation enables unattended establishment of a protected cloud-based web server through AWS EC2 by combining Terraform for infrastructure provisioning and Ansible for Docker-based application automation.
+**By:** Arinze Akosa
+**Project:** Automated Container deployment and Administration in the Cloud
+**Module:** Network Systems & Administration
+
+---
+
+## Overview
+
+This project implements automated deployment of a secure web server on AWS EC2 through **Terraform** for infrastructure provisioning and **Ansible** for Docker-based application deployment and configuration management.
 
 ---
 
